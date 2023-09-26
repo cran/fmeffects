@@ -7,6 +7,7 @@ data(bikes, package = "fmeffects")
 str(bikes)
 
 ## ---- message=FALSE-----------------------------------------------------------
+set.seed(123)
 library(mlr3verse)
 library(ranger)
 task = as_task_regr(x = bikes, id = "bikes", target = "count")
