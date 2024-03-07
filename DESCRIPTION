@@ -1,6 +1,6 @@
 Package: fmeffects
 Title: Model-Agnostic Interpretations with Forward Marginal Effects
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: c(
     person("Holger", "Löwe", , "hbj.loewe@gmail.com", role = c("cre", "aut")),
     person("Christian", "Scholbeck", , "christian.scholbeck@stat.uni-muenchen.de", role = "aut"),
@@ -20,11 +20,12 @@ Collate: 'ExtrapolationDetector.R' 'FME.R' 'FMEPlot.R'
         'PartitioningPlot.R' 'PartitioningRpart.R' 'Predictor.R'
         'PredictorCaret.R' 'PredictorMLR3.R' 'PredictorParsnip.R'
         'Pruner.R' 'S3.R' 'ame.R' 'bikes.R' 'misc.R' 'zzz.R'
-URL: https://github.com/holgstr/fmeffects
+URL: https://holgstr.github.io/fmeffects/,
+        https://github.com/holgstr/fmeffects
 BugReports: https://github.com/holgstr/fmeffects/issues
 VignetteBuilder: knitr
 NeedsCompilation: no
-Packaged: 2023-09-26 14:48:55 UTC; christian
+Packaged: 2024-03-07 19:53:45 UTC; holgerlowe
 Author: Holger Löwe [cre, aut],
   Christian Scholbeck [aut],
   Christian Heumann [rev],
@@ -33,4 +34,4 @@ Author: Holger Löwe [cre, aut],
 Maintainer: Holger Löwe <hbj.loewe@gmail.com>
 Depends: R (>= 3.5.0)
 Repository: CRAN
-Date/Publication: 2023-09-26 15:10:02 UTC
+Date/Publication: 2024-03-07 20:10:02 UTC
