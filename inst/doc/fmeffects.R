@@ -10,19 +10,17 @@ str(bikes)
 set.seed(123)
 library(mlr3verse)
 library(ranger)
-task = as_task_regr(x = bikes, id = "bikes", target = "count")
+task = as_task_regr(x = bikes, target = "count")
 forest = lrn("regr.ranger")$train(task)
 
 ## -----------------------------------------------------------------------------
 effects = fme(model = forest,
                data = bikes,
-               target = "count",
-               feature = "temp",
-               step.size = 1,
+               features = list(temp = 1),
                ep.method = "envelope")
 
-## ---- warning=FALSE-----------------------------------------------------------
-plot(effects, jitter = c(0.2, 0))
+## ---- message=FALSE-----------------------------------------------------------
+plot(effects)
 
 ## -----------------------------------------------------------------------------
 effects$ame
@@ -30,44 +28,66 @@ effects$ame
 ## -----------------------------------------------------------------------------
 head(effects$results)
 
-## -----------------------------------------------------------------------------
+## ---- message=FALSE-----------------------------------------------------------
 effects2 = fme(model = forest,
                data = bikes,
-               target = "count",
-               feature = c("temp", "humidity"),
-               step.size = c(-3, -0.1),
+               features = list(temp = -3, humidity = -0.1),
                ep.method = "envelope")
 
-plot(effects2, jitter = c(0.1, 0.02))
+## ---- message=FALSE-----------------------------------------------------------
+plot(effects2)
 
 ## -----------------------------------------------------------------------------
 effects2$ame
 
 ## -----------------------------------------------------------------------------
-var(effects2$results$fme)
+sd(effects2$results$fme)
+
+## ---- results='hide'----------------------------------------------------------
+effects3 = fme(model = forest,
+               data = bikes[1:200,],
+               feature = list(temp = 1),
+               ep.method = "envelope",
+               compute.nlm = TRUE)
 
 ## -----------------------------------------------------------------------------
-effects3 = fme(model = forest,
+effects3$anlm
+
+## ---- message = FALSE, fig.asp = 0.4------------------------------------------
+plot(effects3, with.nlm = TRUE)
+
+## ---- results='hide'----------------------------------------------------------
+effects4 = fme(model = forest,
+               data = bikes[1:200,],
+               features = list(temp = -3, humidity = -0.1),
+               ep.method = "envelope",
+               compute.nlm = TRUE)
+
+## ---- message = FALSE, fig.asp = 0.4------------------------------------------
+plot(effects4, bins = 25, with.nlm = TRUE)
+
+## -----------------------------------------------------------------------------
+effects5 = fme(model = forest,
               data = bikes,
-              target = "count",
-              feature = "weather",
-              step.size = "rain")
-summary(effects3)
+              features = list(weather = "rain"))
+summary(effects5)
 
 ## ---- warning=FALSE-----------------------------------------------------------
-plot(effects3)
+plot(effects5)
+
+## -----------------------------------------------------------------------------
+fme(model = forest,
+    data = bikes,
+    features = list(weather = "clear", workingday = "no"))$ame
 
 ## ---- warning=FALSE-----------------------------------------------------------
-overview = ame(model = forest,
-           data = bikes,
-           target = "count")
+overview = ame(model = forest, data = bikes)
 overview$results
 
 ## ---- warning=FALSE-----------------------------------------------------------
 overview = ame(model = forest,
                data = bikes,
-               target = "count",
-               features = c(weather = c("rain", "clear"), temp = -1, humidity = 0.1),
+               features = list(weather = c("rain", "clear"), humidity = 0.1),
                ep.method = "envelope")
 overview$results
 

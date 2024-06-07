@@ -24,8 +24,10 @@ Either \code{number.partitions} or \code{max.sd} can be specified.}
 
 \item{rp.method}{One of \code{"ctree"} or \code{"rpart"}. The RP algorithm used for growing the decision tree. Defaults to \code{"ctree"}.}
 
-\item{tree.control}{Control parameters for the RP algorithm. One of \code{"ctree.control(...)"} or \code{"rpart.control(...)"}.
-#' @return \code{Partitioning} Object with identified feature subspaces.}
+\item{tree.control}{Control parameters for the RP algorithm. One of \code{"ctree.control(...)"} or \code{"rpart.control(...)"}.}
+}
+\value{
+\code{Partitioning} Object with identified feature subspaces.
 }
 \description{
 This is a wrapper function that creates the correct subclass of \code{Partitioning}.
@@ -39,15 +41,14 @@ library(ranger)
 data(bikes, package = "fmeffects")
 task = as_task_regr(x = bikes, id = "bikes", target = "count")
 forest = lrn("regr.ranger")$train(task)
-effects = fme(model = forest, data = bikes, target = "count", feature = "temp",
-              step.size = 1, ep.method = "envelope")
+effects = fme(model = forest, data = bikes, features = list("temp" = 1), ep.method = "envelope")
 
 # Find a partitioning with exactly 3 subspaces:
 subspaces = came(effects, number.partitions = 3)
 
 # Find a partitioning with a maximum standard deviation of 20, use `rpart`:
 library(rpart)
-subspaces = came(effects, max.sd = 20, rp.method = "rpart")
+subspaces = came(effects, max.sd = 200, rp.method = "rpart")
 
 # Analyze results:
 summary(subspaces)
@@ -58,5 +59,5 @@ subspaces$results
 subspaces$tree
 }
 \references{
-Scholbeck, C. A., Casalicchio, G., Molnar, C., Bischl, B., & Heumann, C. (2022). Marginal Effects for Non-Linear Prediction Functions.
+Scholbeck, C.A., Casalicchio, G., Molnar, C. et al. Marginal effects for non-linear prediction functions. Data Min Knowl Disc (2024). https://doi.org/10.1007/s10618-023-00993-x
 }

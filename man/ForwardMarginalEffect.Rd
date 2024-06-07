@@ -18,12 +18,11 @@ The FME is a forward difference in prediction due to a specified change in featu
 library(mlr3verse)
 library(ranger)
 data(bikes, package = "fmeffects")
-forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, id = "bikes", target = "count"))
+forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, target = "count"))
 
 # Create an `ForwardMarginalEffect` object:
-effects = ForwardMarginalEffect$new(makePredictor(forest, bikes, "count"),
-                  feature = c("temp", "humidity"),
-                  step.size = c(1, 0.01),
+effects = ForwardMarginalEffect$new(makePredictor(forest, bikes),
+                  features = list("temp" = 1, "humidity" = 0.01),
                   ep.method = "envelope")
 
 ## ------------------------------------------------
@@ -88,8 +87,7 @@ Create a new ForwardMarginalEffect object.
 \subsection{Usage}{
 \if{html}{\out{<div class="r">}}\preformatted{ForwardMarginalEffect$new(
   predictor,
-  feature,
-  step.size,
+  features,
   ep.method = "none",
   compute.nlm = FALSE,
   nlm.intervals = 1
@@ -101,9 +99,7 @@ Create a new ForwardMarginalEffect object.
 \describe{
 \item{\code{predictor}}{\code{Predictor} object.}
 
-\item{\code{feature}}{Feature vector.}
-
-\item{\code{step.size}}{Vector of step sizes.}
+\item{\code{features}}{A named list with the feature name(s) and step size(s).}
 
 \item{\code{ep.method}}{String specifying extrapolation detection method.}
 
@@ -124,12 +120,11 @@ A new \code{ForwardMarginalEffect} object.
 library(mlr3verse)
 library(ranger)
 data(bikes, package = "fmeffects")
-forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, id = "bikes", target = "count"))
+forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, target = "count"))
 
 # Create an `ForwardMarginalEffect` object:
-effects = ForwardMarginalEffect$new(makePredictor(forest, bikes, "count"),
-                  feature = c("temp", "humidity"),
-                  step.size = c(1, 0.01),
+effects = ForwardMarginalEffect$new(makePredictor(forest, bikes),
+                  features = list("temp" = 1, "humidity" = 0.01),
                   ep.method = "envelope")
 }
 \if{html}{\out{</div>}}
@@ -165,7 +160,7 @@ effects$compute()
 \subsection{Method \code{plot()}}{
 Plots results, i.e., FME (and NLMs) for non-extrapolation points, for an \code{FME} object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{ForwardMarginalEffect$plot(with.nlm = FALSE, jitter = c(0, 0))}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{ForwardMarginalEffect$plot(with.nlm = FALSE, bins = 40, binwidth = NULL)}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
@@ -173,9 +168,11 @@ Plots results, i.e., FME (and NLMs) for non-extrapolation points, for an \code{F
 \describe{
 \item{\code{with.nlm}}{Plots NLMs if computed, defaults to \code{FALSE}.}
 
-\item{\code{jitter}}{Jitters data. A two-dimensional numeric vector, corresponds to \code{"width"} and \code{"height"}. See \code{?ggplot2::geom_jitter} for details.
-Not available if \code{step.type} is categorical.
-Defaults to no jittering, i.e., c(0, 0).}
+\item{\code{bins}}{Numeric vector giving number of bins in both vertical and horizontal directions.  Applies only to univariate or bivariate numeric effects.
+See \code{\link[ggplot2:stat_summary_2d]{ggplot2::stat_summary_hex()}} for details.}
+
+\item{\code{binwidth}}{Numeric vector giving bin width in both vertical and horizontal directions. Overrides bins if both set. Applies only to univariate or bivariate numeric effects.
+See \code{\link[ggplot2:stat_summary_2d]{ggplot2::stat_summary_hex()}} for details.}
 }
 \if{html}{\out{</div>}}
 }

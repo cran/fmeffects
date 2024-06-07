@@ -7,28 +7,20 @@
 fme(
   model,
   data,
-  target,
-  feature,
-  step.size,
+  features,
   ep.method = "none",
   compute.nlm = FALSE,
   nlm.intervals = 1
 )
 }
 \arguments{
-\item{model}{The (trained) model, with the ability to predict on new data. This must be an \code{Learner} (\code{mlr3}) or \code{train} (\code{caret}) object.}
+\item{model}{The (trained) model, with the ability to predict on new data. This must be a \code{train.formula} (\code{tidymodels}), \code{Learner} (\code{mlr3}), \code{train} (\code{caret}), \code{lm} or \code{glm} object.}
 
 \item{data}{The data used for computing FMEs, must be data.frame or data.table.}
 
-\item{target}{A string specifying the model's target variable.}
-
-\item{feature}{A character vector of the names of the feature variables affected by the step.
-For numerical steps, this must have length 1 or 2.
-For categorical steps, this must have length 1.}
-
-\item{step.size}{A numeric vector of the step lengths in the features affected by the step.
-For numerical steps, this must have length 1 or 2.
-For categorical steps, this is the name of the reference category.}
+\item{features}{A named list with the feature name(s) and step size(s). The list names should correspond to the names of the feature variables affected by the step.
+The list must exclusively contain either numeric or categorical features, but not a combination of both.
+Numeric features must have a number as step size, categorical features the name of the reference category.}
 
 \item{ep.method}{String specifying the method used for extrapolation detection. One of \code{"none"} or \code{"envelope"}. Defaults to \code{"none"}.}
 
@@ -37,11 +29,22 @@ For categorical steps, this is the name of the reference category.}
 \item{nlm.intervals}{Number of intervals for computing NLMs. Results in longer computing time but more accurate approximation of NLMs. Defaults to \code{1}.}
 }
 \value{
-\code{FME} Object with FMEs computed.
+\code{ForwardsMarginalEffect} object with the following fields:
+\itemize{
+\item \code{ame} average marginal effect (AME).
+\item \code{anlm} average non-linearity measure (NLM).
+\item \code{extrapolation.ids} observations that have been identified as extrapolation points and not included in the analysis.
+\item \code{data.step}, a \code{data.table} of the feature matrix after the step has been applied.
+\item \code{results}, a \code{data.table} of the individual FMEs (and NLMs, if applicable) for all observations that are not extrapolation points.
+}
 }
 \description{
 This is a wrapper function for \code{FME$new(...)$compute()}.
 It computes forward marginal effects (FMEs) for a specified change in feature values.
+}
+\details{
+If one or more numeric features are passed to the \code{features} argument, FMEs are computed as \deqn{FME_{x, h_{S}} = f(x + h_{S}, x_{-S}) - f(x)} where \eqn{h_{S}} is the step size vector and \eqn{x_{-S}} the other features.
+If one or more categorical features are passed to \code{features}, \deqn{FME_{x, c_{J}} = f(c_{J}, x_{-J}) - f(x)} where \eqn{c_{J}} is the set of selected reference categories in \code{features} and \eqn{x_{-J}} the other features.
 }
 \examples{
 # Train a model:
@@ -49,11 +52,10 @@ It computes forward marginal effects (FMEs) for a specified change in feature va
 library(mlr3verse)
 library(ranger)
 data(bikes, package = "fmeffects")
-forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, id = "bikes", target = "count"))
+forest = lrn("regr.ranger")$train(as_task_regr(x = bikes, target = "count"))
 
-# Compute FMEs:
-effects = fme(model = forest, data = bikes, target = "count", feature = "temp",
-              step.size = 1, ep.method = "envelope")
+# Compute FMEs for a numerical feature:
+effects = fme(model = forest, data = bikes, features = list("temp" = 1), ep.method = "envelope")
 
 # Analyze results:
 summary(effects)
@@ -61,7 +63,10 @@ plot(effects)
 
 # Extract results:
 effects$results
+
+# Compute the AME for a categorial feature:
+fme(model = forest, data = bikes, features = list("weather" = "rain"))$ame
 }
 \references{
-Scholbeck, C. A., Casalicchio, G., Molnar, C., Bischl, B., & Heumann, C. (2022). Marginal Effects for Non-Linear Prediction Functions.
+Scholbeck, C.A., Casalicchio, G., Molnar, C. et al. Marginal effects for non-linear prediction functions. Data Min Knowl Disc (2024). https://doi.org/10.1007/s10618-023-00993-x
 }

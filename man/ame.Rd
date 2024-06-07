@@ -4,16 +4,16 @@
 \alias{ame}
 \title{Computes AMEs for every feature (or a subset of features) of a model.}
 \usage{
-ame(model, data, target, features = NULL, ep.method = "none")
+ame(model, data, features = NULL, ep.method = "none")
 }
 \arguments{
-\item{model}{The (trained) model, with the ability to predict on new data. This must be an \code{Learner} (\code{mlr3}) or \code{train} (\code{caret}) object.}
+\item{model}{The (trained) model, with the ability to predict on new data. This must be a \code{train.formula} (\code{tidymodels}), \code{Learner} (\code{mlr3}), \code{train} (\code{caret}), \code{lm} or \code{glm} object.}
 
 \item{data}{The data used for computing AMEs, must be data.frame or data.table.}
 
-\item{target}{A string specifying the model's target variable.}
-
-\item{features}{A named character vector of the names of the feature variables for which AMEs should be computed, together with the desired step sizes.}
+\item{features}{If not NULL, a named list of the names of the feature variables for which AMEs should be computed, together with the desired step sizes.
+For numeric features, the step size must be a single number.
+For categorial features, the step size must be a character vector of category names that is a subset of the levels of the factor variable.}
 
 \item{ep.method}{String specifying the method used for extrapolation detection. One of \code{"none"} or \code{"envelope"}. Defaults to \code{"none"}.}
 }
@@ -42,24 +42,24 @@ library(mlr3verse)
 library(ranger)
 data(bikes, package = "fmeffects")
 set.seed(123)
-row.id = sample(1:nrow(bikes), 100)
 task = as_task_regr(x = bikes, id = "bikes", target = "count")
 forest = lrn("regr.ranger")$train(task)
 
 # Compute AMEs for all features:
-overview = ame(model = forest, data = bikes[row.id, ], target = "count")
+\dontrun{
+overview = ame(model = forest, data = bikes)
 summary(overview)
 
 # Compute AMEs for a subset of features with non-default step.sizes:
 overview = ame(model = forest,
-               data = bikes[row.id, ],
-               target = "count",
-               features = c(humidity = 0.1, weather = c("clear", "rain")))
+               data = bikes,
+               features = list(humidity = 0.1, weather = c("clear", "rain")))
 summary(overview)
 
 # Extract results:
 overview$results
 }
+}
 \references{
-Scholbeck, C. A., Casalicchio, G., Molnar, C., Bischl, B., & Heumann, C. (2022). Marginal Effects for Non-Linear Prediction Functions.
+Scholbeck, C.A., Casalicchio, G., Molnar, C. et al. Marginal effects for non-linear prediction functions. Data Min Knowl Disc (2024). https://doi.org/10.1007/s10618-023-00993-x
 }

@@ -18,31 +18,32 @@ library(mlr3verse)
 library(ranger)
 set.seed(123)
 data(bikes, package = "fmeffects")
-row.id = sample(1:nrow(bikes), 100)
 task = as_task_regr(x = bikes, id = "bikes", target = "count")
 forest = lrn("regr.ranger")$train(task)
 
 # Compute AMEs for all features:
+\dontrun{
 overview = AverageMarginalEffects$new(
   model = forest,
-  data = bikes[row.id, ],
-  target = "count")$compute()
+  data = bikes)$compute()
 summary(overview)
 
 # Compute AMEs for a subset of features with non-default step.sizes:
 overview = AverageMarginalEffects$new(model = forest,
-                                      data = bikes[row.id, ],
-                                      target = "count",
-                                      features = c(humidity = 0.1,
+                                      data = bikes,
+                                      features = list(humidity = 0.1,
                                                    weather = c("clear", "rain")))$compute()
 summary(overview)
+}
 
 ## ------------------------------------------------
 ## Method `AverageMarginalEffects$compute`
 ## ------------------------------------------------
 
 # Compute results:
+\dontrun{
 overview$compute()
+}
 }
 \section{Public fields}{
 \if{html}{\out{<div class="r6-fields">}}
@@ -73,25 +74,19 @@ overview$compute()
 \subsection{Method \code{new()}}{
 Create a new AME object.
 \subsection{Usage}{
-\if{html}{\out{<div class="r">}}\preformatted{AverageMarginalEffects$new(
-  model,
-  data,
-  target,
-  features = NULL,
-  ep.method = "none"
-)}\if{html}{\out{</div>}}
+\if{html}{\out{<div class="r">}}\preformatted{AverageMarginalEffects$new(model, data, features = NULL, ep.method = "none")}\if{html}{\out{</div>}}
 }
 
 \subsection{Arguments}{
 \if{html}{\out{<div class="arguments">}}
 \describe{
-\item{\code{model}}{The (trained) model, with the ability to predict on new data. This must be an \code{Learner} (\code{mlr3}) or \code{train} (\code{caret}) object.}
+\item{\code{model}}{The (trained) model, with the ability to predict on new data. This must be a \code{train.formula} (\code{tidymodels}), \code{Learner} (\code{mlr3}), \code{train} (\code{caret}), \code{lm} or \code{glm} object.}
 
 \item{\code{data}}{The data used for computing AMEs, must be data.frame or data.table.}
 
-\item{\code{target}}{A string specifying the model's target variable.}
-
-\item{\code{features}}{A named character vector of the names of the feature variables for which AMEs should be computed, together with the desired step sizes.}
+\item{\code{features}}{If not NULL, a named list of the names of the feature variables for which AMEs should be computed, together with the desired step sizes.
+For numeric features, the step size must be a single number.
+For categorial features, the step size must be a character vector of category names that is a subset of the levels of the factor variable.}
 
 \item{\code{ep.method}}{String specifying the method used for extrapolation detection. One of \code{"none"} or \code{"envelope"}. Defaults to \code{"none"}.}
 }
@@ -108,24 +103,23 @@ library(mlr3verse)
 library(ranger)
 set.seed(123)
 data(bikes, package = "fmeffects")
-row.id = sample(1:nrow(bikes), 100)
 task = as_task_regr(x = bikes, id = "bikes", target = "count")
 forest = lrn("regr.ranger")$train(task)
 
 # Compute AMEs for all features:
+\dontrun{
 overview = AverageMarginalEffects$new(
   model = forest,
-  data = bikes[row.id, ],
-  target = "count")$compute()
+  data = bikes)$compute()
 summary(overview)
 
 # Compute AMEs for a subset of features with non-default step.sizes:
 overview = AverageMarginalEffects$new(model = forest,
-                                      data = bikes[row.id, ],
-                                      target = "count",
-                                      features = c(humidity = 0.1,
+                                      data = bikes,
+                                      features = list(humidity = 0.1,
                                                    weather = c("clear", "rain")))$compute()
 summary(overview)
+}
 }
 \if{html}{\out{</div>}}
 
@@ -147,7 +141,9 @@ An \code{AME} object with results.
 \subsection{Examples}{
 \if{html}{\out{<div class="r example copy">}}
 \preformatted{# Compute results:
+\dontrun{
 overview$compute()
+}
 }
 \if{html}{\out{</div>}}
 
