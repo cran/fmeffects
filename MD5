@@ -1,9 +1,9 @@
-44705b7eb84e18a23956bdd9f11954bf *DESCRIPTION
+d618a7464b4ba50ab1938790c9023477 *DESCRIPTION
 7462356e276d7484d7f16d6d3e3102c3 *NAMESPACE
-f6ae18893e0264d67e15bcd4652480d0 *NEWS.md
+124ad0a119c0e0e285d851fb2a767fee *NEWS.md
 b6d644b843aa3287be0453b5b165a090 *R/ExtrapolationDetector.R
-0cc921c58fdb258a36eab8d1c37aa618 *R/FME.R
-88c3b9d4b60b74cfbeab7229bf21b578 *R/FMEPlot.R
+ee4af996bdf39988da08e1cae569809b *R/FME.R
+017419f93311c1c1ec181fa3114b964a *R/FMEPlot.R
 da28d41d4691dcda901bead934756660 *R/NonLinearityMeasure.R
 81ca004f4db892664439c258049fdfcc *R/Partitioning.R
 c1c35817865ca6a5ec83ca34b4d16ebd *R/PartitioningCtree.R
@@ -28,7 +28,7 @@ cf24e69f4690eae418449adb4b8ccfef *build/vignette.rds
 e14cd63101f3cd5f97525d9179f7a858 *inst/doc/fme_theory.html
 9361577627501e8a89d70e13a56d8407 *inst/doc/fmeffects.R
 fdfe7f48222f0914cddd5524e5f34215 *inst/doc/fmeffects.Rmd
-339c643ee9e99fb21b1dc2744b7bb2a4 *inst/doc/fmeffects.html
+cfeb9eb0ccf126d9935d51b2f8c849b3 *inst/doc/fmeffects.html
 27f14cc9a215cd44dec42ce9b619afeb *man/AverageMarginalEffects.Rd
 5c11d622fc72fa8e20fdc00851ec68e7 *man/ForwardMarginalEffect.Rd
 f40adaa3a8da98e4bf01efe816d2846c *man/Partitioning.Rd
